@@ -1,0 +1,925 @@
+{
+	"info": {
+		"_postman_id": "f78ebaaa-095a-48b7-b4a8-b15873abed89",
+		"name": "SimpleBooksAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17751419"
+	},
+	"item": [
+		{
+			"name": "Status",
+			"item": [
+				{
+					"name": "SuccessfulStatus",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Object contained in response\", () => {\r",
+									"  const expectedObject = {\r",
+									"    \"status\": \"OK\"\r",
+									"  };\r",
+									"  pm.expect(pm.response.json()).to.deep.include(expectedObject);\r",
+									"});\r",
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Status code name has OK\", () => {\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ErrorStatus",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", () => {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Status code name has Not Found\", () => {\r",
+									"    pm.response.to.have.status(\"Not Found\");\r",
+									"});\r",
+									"pm.test(\"Response contains cannot pactch\", () => {\r",
+									"    const $ = cheerio.load(pm.response.text());\r",
+									"    pm.expect($.html(\"pre\")).to.eql(\"<pre>Cannot GET /estado</pre>\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/estado",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"estado"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SuccessfulHomeApi",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Object contained in response\", () => {\r",
+									"  const expectedObject = {\r",
+									"    \"message\": \"Welcome to the Simple Books API.\"\r",
+									"  };\r",
+									"  pm.expect(pm.response.json()).to.deep.include(expectedObject);\r",
+									"});\r",
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Status code name has OK\", () => {\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}",
+							"host": [
+								"{{baseUrl}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "APIAuthenticationSuccessful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"token\", jsonData.accessToken);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", () => {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Status code name has Created\", () => {\r",
+									"    pm.response.to.have.status(\"Created\");\r",
+									"});\r",
+									"pm.test(\"Correct message on the body\", () => {\r",
+									"    pm.expect(pm.response.text()).to.include(\"accessToken\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"name\",pm.variables.replaceIn(\"{{$randomFirstName}}\"));\r",
+									"pm.environment.set(\"mail\",pm.variables.replaceIn(\"{{$randomEmail}}\"));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"clientName\": \"{{name}}\",\r\n   \"clientEmail\": \"{{mail}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{login}}",
+							"host": [
+								"{{baseUrl}}{{login}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ApiAuthenticationError",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 409\", () => {\r",
+									"    pm.response.to.have.status(409);\r",
+									"});\r",
+									"pm.test(\"Status code name has Conflict\", () => {\r",
+									"    pm.response.to.have.status(\"Conflict\");\r",
+									"});\r",
+									"pm.test(\"Correct message on the body\", () => {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.error).to.eql(\"API client already registered. Try a different email.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"clientName\": \"{{name}}\",\r\n   \"clientEmail\": \"{{mail}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{login}}",
+							"host": [
+								"{{baseUrl}}{{login}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "SuccessfulQueryAllBooks",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is less than 900ms\", ()=> {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(900);\r",
+									"});\r",
+									"pm.test(\"Status code is 200\", ()=> {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"const schema_response = {\r",
+									"    \"items\":{\r",
+									"        \"type\":\"object\",\r",
+									"        \"properties\":{\r",
+									"            \"id\": {\"type\":\"number\"},\r",
+									"            \"name\": {\"type\":\"string\"},\r",
+									"            \"type\": {\"type\":\"string\"},\r",
+									"            \"available\": {\"type\":\"boolean\"}\r",
+									"        }\r",
+									"    }\r",
+									"};\r",
+									"pm.test(\"Check response schema is correct\",()=>{\r",
+									"    pm.response.to.have.jsonSchema(schema_response);\r",
+									"});\r",
+									"\r",
+									"//Enviar id y nombres seleccionados aleatoriamente de la respuesta\r",
+									"var jsonData = pm.response.json();\r",
+									"var id = []\r",
+									"jsonData.forEach((x)=>{id.push(x.id)});\r",
+									"var existingId= id[Math.floor(Math.random() * id.length)];\r",
+									"var nonexistentId = existingId;\r",
+									"while(id.includes(nonexistentId)){\r",
+									"    nonexistentId = Math.floor(Math.random() * 1000+1);\r",
+									"};\r",
+									"var books = jsonData.find(x => x.id == existingId); \r",
+									"pm.environment.set(\"nameBook\",pm.variables.replaceIn(books.name));\r",
+									"pm.environment.set(\"typeBook\",pm.variables.replaceIn(books.type));\r",
+									"pm.environment.set(\"availableBook\",pm.variables.replaceIn(books.available));\r",
+									"pm.environment.set(\"existingId\",pm.variables.replaceIn(\"/\"+ existingId));\r",
+									"pm.environment.set(\"nonexistentId\",pm.variables.replaceIn(\"/\"+nonexistentId));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{book}}",
+							"host": [
+								"{{baseUrl}}{{book}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SuccessfulQuerySingleBook",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Correct message on the body\", () => {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"nameBook\"));\r",
+									"    pm.expect(jsonData.type).to.eql(pm.environment.get(\"typeBook\"))\r",
+									"    pm.expect(jsonData.available).to.eql(pm.environment.get(\"availableBook\"))\r",
+									"});\r",
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Status code name has OK\", () => {\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"var code = (pm.environment.get(\"existingId\")).slice(1,)//Limpiar id existente\r",
+									"pm.environment.set(\"id_existingId\", code);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{book}}{{existingId}}",
+							"host": [
+								"{{baseUrl}}{{book}}{{existingId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ErrorQuerySingleBook",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Status code name has Not Found\", function () {\r",
+									"    pm.response.to.have.status(\"Not Found\");\r",
+									"});\r",
+									"pm.test(\"Correct message on the body\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    var code = (pm.environment.get(\"nonexistentId\")).slice(1,);\r",
+									"    pm.environment.set(\"id_nonexistenId\", code);//Limpiar id no existente\r",
+									"    pm.expect(jsonData.error).to.eql(\"No book with id \"+code);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{book}}{{nonexistentId}}",
+							"host": [
+								"{{baseUrl}}{{book}}{{nonexistentId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SuccessfulQueryByType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"Status code name has OK\", () => {\r",
+									"    pm.response.to.have.status(\"OK\");\r",
+									"});\r",
+									"pm.test(\"Validate type in response\", () => {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    jsonData.forEach((x)=>{pm.expect(x.type).to.eql(\"fiction\")});\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{book}}?type=fiction",
+							"host": [
+								"{{baseUrl}}{{book}}"
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "fiction"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ErrorQueryByType",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", () => {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Status code name has Bad Request\", () => {\r",
+									"    pm.response.to.have.status(\"Bad Request\");\r",
+									"});\r",
+									"pm.test(\"Correct message in the response\", () => {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.error).to.eql(\"Invalid value for query parameter 'type'. Must be one of: fiction, non-fiction.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{book}}/?type=non_fiction",
+							"host": [
+								"{{baseUrl}}{{book}}"
+							],
+							"path": [
+								""
+							],
+							"query": [
+								{
+									"key": "type",
+									"value": "non_fiction"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "SubmitOrderSuccessful",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", ()=> {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"pm.test(\"Status code name has Created\", ()=> {\r",
+									"    pm.response.to.have.status(\"Created\");\r",
+									"});\r",
+									"pm.test(\"Correct message on the body\", ()=> {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.created).to.eql(true);\r",
+									"});\r",
+									"const schema_response = {\r",
+									"        \"properties\":{\r",
+									"            \"created\": {\"type\":\"boolean\"},\r",
+									"            \"orderId\": {\"type\":\"string\"}\r",
+									"        }\r",
+									"};\r",
+									"pm.test(\"Check response schema is correct\",()=>{\r",
+									"    pm.response.to.have.jsonSchema(schema_response);\r",
+									"});\r",
+									"\r",
+									"//Enviar Id Order a environment variable\r",
+									"var jsonData = pm.response.json();\r",
+									"pm.environment.set(\"orderId\",pm.variables.replaceIn(\"/\"+jsonData.orderId));\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"bookId\": {{id_existingId}},\r\n  \"customerName\": \"{{name}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{order}}",
+							"host": [
+								"{{baseUrl}}{{order}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SubmitOrderError",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", ()=> {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Status code name has Bad Request\", ()=> {\r",
+									"    pm.response.to.have.status(\"Bad Request\");\r",
+									"});\r",
+									"pm.test(\"Correct message on the body\", ()=> {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.error).to.eql(\"Invalid or missing bookId.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"bookId\": {{id_nonexistenId}},\r\n  \"customerName\": \"{{name}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{order}}",
+							"host": [
+								"{{baseUrl}}{{order}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SuccessfulQueryAllOrders",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Validate there is order created\", () => {\r",
+									"  const jsonData = pm.response.json();\r",
+									"  var id_Order = (pm.environment.get(\"orderId\")).slice(1,);\r",
+									"  var orders_items = jsonData.find(x => x.id == id_Order );\r",
+									"  pm.expect(String(orders_items.bookId)).to.eql(pm.environment.get(\"id_existingId\"));\r",
+									"  pm.expect(orders_items.customerName).to.eql(pm.environment.get(\"name\"));\r",
+									"});    \r",
+									"pm.test(\"x-powered-by header is Express\", () => {\r",
+									"  pm.expect(pm.response.headers.get('x-powered-by')).to.eql('Express');\r",
+									"}); \r",
+									"const schema_response = {\r",
+									"    \"items\": {\r",
+									"        \"type\": \"object\",\r",
+									"        \"properties\":{\r",
+									"            \"id\": {\"type\":\"string\"},\r",
+									"            \"bookId\":{\"type\":\"number\"},\r",
+									"            \"customerName\": {\"type\":\"string\"},\r",
+									"            \"createdBy\": {\"type\":\"string\"},\r",
+									"            \"quantity\":{\"type\":\"number\"},\r",
+									"            \"timestamp\":{\"type\":\"number\"}\r",
+									"        }\r",
+									"    }\r",
+									"        \r",
+									"};\r",
+									"pm.test(\"Check response schema is correct\",()=>{\r",
+									"    pm.response.to.have.jsonSchema(schema_response);\r",
+									"});        "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{order}}",
+							"host": [
+								"{{baseUrl}}{{order}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SuccessfulUpdateOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Response time is less than 900ms\", ()=> {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(900);\r",
+									"});\r",
+									"pm.test(\"Status code is 204\", ()=> {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"pm.test(\"Status code name has No Content\", ()=> {\r",
+									"    pm.response.to.have.status(\"No Content\");\r",
+									"}); \r",
+									"pm.test(\"Message on the body empty\", ()=> { \r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});          "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.environment.set(\"name\",pm.variables.replaceIn(\"{{$randomFirstName}}\"));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"customerName\": \"{{name}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{order}}{{orderId}}",
+							"host": [
+								"{{baseUrl}}{{order}}{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ErrorUpdateOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", ()=> {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Status code name has Not Found\", ()=> {\r",
+									"    pm.response.to.have.status(\"Not Found\");\r",
+									"}); \r",
+									"pm.test(\"Response cannot pactch\", ()=> {\r",
+									"    const $ = cheerio.load(pm.response.text());\r",
+									"    pm.expect($.html(\"pre\")).to.eql(\"<pre>Cannot PATCH /orders\"+pm.environment.get(\"name\") +\"</pre>\");\r",
+									"});\r",
+									"        "
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"customerName\": \"{{name}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}{{order}}{{name}}",
+							"host": [
+								"{{baseUrl}}{{order}}{{name}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SuccessfulQuerySingleOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json();\r",
+									"pm.test(\"Test data type of the response\", () => {\r",
+									"  pm.expect(jsonData).to.be.an(\"object\");\r",
+									"  pm.expect(jsonData.id).to.be.a(\"string\");\r",
+									"  pm.expect(jsonData.bookId).to.be.a(\"number\");\r",
+									"  pm.expect(jsonData.customerName).to.be.an(\"string\");\r",
+									"  pm.expect(jsonData.createdBy).to.be.an(\"string\");\r",
+									"  pm.expect(jsonData.quantity).to.be.a(\"number\");\r",
+									"  pm.expect(jsonData.timestamp).to.be.a(\"number\");\r",
+									"});\r",
+									"pm.test(\"The response has all properties\", () => {\r",
+									"    pm.expect(jsonData.bookId).to.eql(parseInt(pm.environment.get(\"id_existingId\")));\r",
+									"    pm.expect(jsonData.customerName).to.eql(pm.environment.get(\"name\"));    \r",
+									"    pm.expect(jsonData.quantity).to.eql(1);\r",
+									"    pm.expect(String(jsonData.timestamp)).to.have.lengthOf(13);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{order}}{{orderId}}",
+							"host": [
+								"{{baseUrl}}{{order}}{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ErrorQuerySingleOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"pm.test(\"Status code name has Unauthorized\", function () {\r",
+									"    pm.response.to.have.status(\"Unauthorized\");\r",
+									"});\r",
+									"pm.test(\"Correct message on the body\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.error).to.eql(\"Missing Authorization header.\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{order}}{{orderId}}",
+							"host": [
+								"{{baseUrl}}{{order}}{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SuccessfulDeleteOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204\", function () {\r",
+									"    pm.response.to.have.status(204);\r",
+									"});\r",
+									"pm.test(\"Status code name has No Content\", function () {\r",
+									"    pm.response.to.have.status(\"No Content\");\r",
+									"}); \r",
+									"pm.test(\"Connection header is keep-alive\", () => {\r",
+									"  pm.expect(pm.response.headers.get('Connection')).to.eql('keep-alive');\r",
+									"}); \r",
+									"pm.test(\"Message on the body empty\", ()=> { \r",
+									"    pm.response.to.have.body(\"\");\r",
+									"});  "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{order}}{{orderId}}",
+							"host": [
+								"{{baseUrl}}{{order}}{{orderId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ErrorDeleteOrder",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Object contained in response.\", () => {\r",
+									"  const expectedObject = {\r",
+									"     \"error\": \"No order with id \"+pm.environment.get(\"id_nonexistenId\")+\".\"\r",
+									"  };\r",
+									"  pm.expect(pm.response.json()).to.deep.include(expectedObject);\r",
+									"});\r",
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"pm.test(\"Status code name has Not Found\", function () {\r",
+									"    pm.response.to.have.status(\"Not Found\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{order}}{{nonexistentId}}",
+							"host": [
+								"{{baseUrl}}{{order}}{{nonexistentId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{token}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}

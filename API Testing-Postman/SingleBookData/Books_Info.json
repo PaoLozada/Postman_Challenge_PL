@@ -1,0 +1,32 @@
+[
+   {
+      "id_B": 4,
+      "name_B": "The Midnight Library",
+      "author_B": "Matt Haig",
+      "type_B": "fiction",
+      "price_B": 15.6,
+      "available_B": true,
+      "status_code": 200,
+      "status_name": "OK"
+   },
+   {
+      "id_B": 3,
+      "name_B": "The Vanishing Half",
+      "author_B": "Brit Bennett",
+      "type_B": "fiction",
+      "price_B": 16.2,
+      "available_B": true,
+      "status_code": 200,
+      "status_name": "OK"
+   },
+   {
+      "id_B": 1,
+      "name_B": "The Russian",
+      "author_B": "James Patterson and James O. Born",
+      "type_B": "fiction",
+      "price_B": 12.98,
+      "available_B": true,
+      "status_code": 200,
+      "status_name": "OK"
+   }
+]

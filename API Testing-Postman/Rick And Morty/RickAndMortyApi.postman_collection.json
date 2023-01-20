@@ -1,0 +1,383 @@
+{
+	"info": {
+		"_postman_id": "be635143-89b1-43b5-8ac0-decd64d6af50",
+		"name": "RickAndMortyApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17751419"
+	},
+	"item": [
+		{
+			"name": "Consultation Characters Page",
+			"item": [
+				{
+					"name": "GetSuccessfullCharactersPage",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"url_current = pm.environment.get(\"new_page\");\r",
+									"pm.request.url=url_current;"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const jsonData = pm.response.json(); \r",
+									"var num_results = (jsonData.results).length; \r",
+									"var selected = Math.floor(Math.random() * num_results);\r",
+									"\r",
+									"pm.test(\"Validate maximum 20 results per page\", ()=>{\r",
+									"    pm.expect(jsonData.results).to.have.length.most(20);\r",
+									"});\r",
+									"pm.test(\"Validate characters sorted by id\", ()=>{\r",
+									"    var ids=[]\r",
+									"    jsonData.results.forEach((x)=>{ids.push(x.id)});\r",
+									"    var listOrde = [...ids];\r",
+									"    listOrde.sort((a, b) => a - b);\r",
+									"    pm.expect(Object.values(ids)).to.eql(Object.values(listOrde));\r",
+									"});\r",
+									"pm.test(\"Test data type of the response, results\", () => {   \r",
+									"  var selectedItem = jsonData.results[selected];\r",
+									"  pm.expect(selectedItem.id).to.be.an(\"number\");\r",
+									"  pm.expect(selectedItem.name).to.be.a(\"string\");\r",
+									"  pm.expect(selectedItem.status).to.be.a(\"string\");\r",
+									"  pm.expect(selectedItem.species).to.be.an(\"string\");\r",
+									"  pm.expect(selectedItem.type).to.be.an(\"string\");\r",
+									"  pm.expect(selectedItem.gender).to.be.a(\"string\");\r",
+									"  pm.expect(selectedItem.origin).to.be.a(\"object\");\r",
+									"  pm.expect(selectedItem.location).to.be.a(\"object\");\r",
+									"  pm.expect(selectedItem.image).to.be.a(\"string\");\r",
+									"  pm.expect(selectedItem.episode).to.be.a(\"array\");\r",
+									"  pm.expect(selectedItem.url).to.be.a(\"string\");\r",
+									"  pm.expect(selectedItem.created).to.be.a(\"string\");\r",
+									"});\r",
+									"//Ejecutar siguiente página mientras exista\r",
+									"var nextRequest = jsonData.info.next; \r",
+									"if (nextRequest!=null){\r",
+									"    pm.environment.set(\"new_page\", nextRequest);\r",
+									"    postman.setNextRequest(pm.info.requestName);  \r",
+									"}else{\r",
+									"    pm.environment.set(\"new_page\", pm.environment.get(\"baseUrlCharacter\"));\r",
+									"};\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrlCharacter}}",
+							"host": [
+								"{{baseUrlCharacter}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "GetSuccessfullAllCharacters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json(); \r",
+							"var num_results = (jsonData.results).length; \r",
+							"var selected = Math.floor(Math.random() * num_results);  \r",
+							"var selectedItem = jsonData.results[selected];\r",
+							"  \r",
+							"pm.test(\"Response time is less than 900ms\", ()=> {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(900);\r",
+							"});\r",
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Status name is OK\", ()=> {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"const schema_response = {\r",
+							"    \"properties\":{\r",
+							"        \"info\":{\r",
+							"            \"type\":\"object\"},\r",
+							"        \"results\":{\r",
+							"            \"type\":\"array\",\r",
+							"            \"items\":{\r",
+							"                \"properties\":{\r",
+							"                    \"id\":{\"type\":\"number\"},\r",
+							"                    \"name\":{\"type\":\"string\"},\r",
+							"                    \"status\":{\"type\":\"string\"},\r",
+							"                    \"species\":{\"type\":\"string\"},\r",
+							"                    \"type\":{\"type\":\"string\"},\r",
+							"                    \"gender\":{\"type\":\"string\"},\r",
+							"                    \"origin\":{\"type\":\"object\"},\r",
+							"                    \"location\":{\"type\":\"object\"},\r",
+							"                    \"image\":{\"type\":\"string\"},\r",
+							"                    \"episode\":{\"type\":\"array\"},\r",
+							"                    \"url\":{\"type\":\"string\"},\r",
+							"                    \"created\":{\"type\":\"string\"}\r",
+							"                }                \r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"};\r",
+							"pm.test(\"Check response schema is correct\",()=>{\r",
+							"    pm.response.to.have.jsonSchema(schema_response);\r",
+							"});\r",
+							"\r",
+							"pm.environment.set(\"character_id\", \"/\"+selectedItem.id);\r",
+							"pm.environment.set(\"name_character\",selectedItem.name);\r",
+							"pm.environment.set(\"status_character\",selectedItem.status);\r",
+							"pm.environment.set(\"species_character\",selectedItem.species);\r",
+							"pm.environment.set(\"type_character\",selectedItem.type);\r",
+							"pm.environment.set(\"gender_character\",selectedItem.gender);\r",
+							"pm.environment.set(\"origin_character\",selectedItem.origin);\r",
+							"pm.environment.set(\"location_character\",selectedItem.location);\r",
+							"pm.environment.set(\"image_character\",selectedItem.image);\r",
+							"pm.environment.set(\"episode_character\",selectedItem.episode);\r",
+							"pm.environment.set(\"url_character\",selectedItem.url);\r",
+							"pm.environment.set(\"created_character\",selectedItem.created);\r",
+							"var nonexistent_page = jsonData.info.pages + 10;\r",
+							"pm.environment.set(\"non_page\", \"/?page=\"+nonexistent_page);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlCharacter}}",
+					"host": [
+						"{{baseUrlCharacter}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetSingleSuccessfulCharacter",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Status name is OK\", ()=> {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"pm.test(\"The response has all properties\",()=>{\r",
+							"    const jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"name_character\"));\r",
+							"    pm.expect(jsonData.status).to.eql(pm.environment.get(\"status_character\"));\r",
+							"    pm.expect(jsonData.species).to.eql(pm.environment.get(\"species_character\"));\r",
+							"    pm.expect(jsonData.type).to.eql(pm.environment.get(\"type_character\"));\r",
+							"    pm.expect(jsonData.gender).to.eql(pm.environment.get(\"gender_character\"));\r",
+							"    pm.expect(jsonData.origin).to.eql(pm.environment.get(\"origin_character\"));\r",
+							"    pm.expect(jsonData.location).to.eql(pm.environment.get(\"location_character\"));\r",
+							"    pm.expect(jsonData.image).to.eql(pm.environment.get(\"image_character\"));\r",
+							"    pm.expect(jsonData.episode).to.eql(pm.environment.get(\"episode_character\"));\r",
+							"    pm.expect(jsonData.url).to.eql(pm.environment.get(\"url_character\"));\r",
+							"    pm.expect(jsonData.created).to.eql(pm.environment.get(\"created_character\"));\r",
+							"});\r",
+							"\r",
+							"const schema_response = {\r",
+							"    \"properties\":{\r",
+							"        \"id\":{\"type\":\"number\"},\r",
+							"            \"name\":{\"type\":\"string\"},\r",
+							"            \"status\":{\"type\":\"string\"},\r",
+							"            \"species\":{\"type\":\"string\"},\r",
+							"            \"type\":{\"type\":\"string\"},\r",
+							"            \"gender\":{\"type\":\"string\"},\r",
+							"            \"origin\":{\"type\":\"object\"},\r",
+							"            \"location\":{\"type\":\"object\"},\r",
+							"            \"image\":{\"type\":\"string\"},\r",
+							"            \"episode\":{\"type\":\"array\"},\r",
+							"            \"url\":{\"type\":\"string\"},\r",
+							"            \"created\":{\"type\":\"string\"}\r",
+							"    }\r",
+							"};\r",
+							"pm.test(\"Check response schema is correct\",()=>{\r",
+							"    pm.response.to.have.jsonSchema(schema_response);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlCharacter}}{{character_id}}",
+					"host": [
+						"{{baseUrlCharacter}}{{character_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetSuccessfulEmptyCharacters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response time is less than 900ms\", ()=> {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(900);\r",
+							"});\r",
+							"pm.test(\"Status code is 200\", ()=> {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Status code name has OK\", ()=> {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"}); \r",
+							"pm.test(\"Message on the body is array empty\", ()=> {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    pm.expect(jsonData).to.be.empty;\r",
+							"}); \r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var nonexistentChar = Math.floor(Math.random() * (2000 - 1000)) + 1000;\r",
+							"pm.environment.set(\"non_Character_1\", \"/\"+nonexistentChar);\r",
+							"pm.environment.set(\"non_Character_2\", \",\"+nonexistentChar+100);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlCharacter}}{{non_Character_1}}{{non_Character_2}}",
+					"host": [
+						"{{baseUrlCharacter}}{{non_Character_1}}{{non_Character_2}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetErrorCharactersPage",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 404\", ()=> {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"pm.test(\"Status name is Not Found\", ()=> {\r",
+							"    pm.response.to.have.status(\"Not Found\");\r",
+							"});\r",
+							"pm.test(\"Correct message on the body\", ()=> {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.error).to.eql(\"There is nothing here\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlCharacter}}{{non_page}}",
+					"host": [
+						"{{baseUrlCharacter}}{{non_page}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetSingleErrorCharacter",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 500\", ()=> {\r",
+							"    pm.response.to.have.status(500);\r",
+							"});\r",
+							"pm.test(\"Status name is Internal Server Error\", ()=> {\r",
+							"    pm.response.to.have.status(\"Internal Server Error\");\r",
+							"});\r",
+							"pm.test(\"Correct message on the body\", ()=> {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.error).to.eql(\"Hey! you must provide an id\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrlCharacter}}/{{name_character}}",
+					"host": [
+						"{{baseUrlCharacter}}"
+					],
+					"path": [
+						"{{name_character}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

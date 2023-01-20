@@ -1,0 +1,56 @@
+{
+	"info": {
+		"_postman_id": "da83b5b3-0c7b-4a6b-8130-25d7df538e8d",
+		"name": "DataGetSingleBooksAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "17751419"
+	},
+	"item": [
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "SuccessfulQuerySingleBook_Data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Correct message on the body\", () => {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(pm.variables.get(\"name_B\"));    \r",
+									"    pm.expect(jsonData.author).to.eql(pm.variables.get(\"author_B\"));\r",
+									"    pm.expect(jsonData.type).to.eql(pm.variables.get(\"type_B\"));\r",
+									"    pm.expect(jsonData.price).to.eql(pm.variables.get(\"price_B\"));\r",
+									"    pm.expect(jsonData.available).to.eql(pm.variables.get(\"available_B\"))\r",
+									"});\r",
+									"pm.test(\"Status code is 200\", () => {\r",
+									"    pm.response.to.have.status(pm.variables.get(\"status_code\"));\r",
+									"});\r",
+									"pm.test(\"Status code name has OK\", () => {\r",
+									"    pm.response.to.have.status(pm.variables.get(\"status_name\"));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}{{book}}/{{id_B}}",
+							"host": [
+								"{{baseUrl}}{{book}}"
+							],
+							"path": [
+								"{{id_B}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

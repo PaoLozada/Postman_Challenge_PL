@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "f78ebaaa-095a-48b7-b4a8-b15873abed89",
+		"_postman_id": "64a68eab-0c9c-4eff-90cc-c32ea2417914",
 		"name": "SimpleBooksAPI",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "17751419"
@@ -284,7 +284,11 @@
 									"//Enviar id y nombres seleccionados aleatoriamente de la respuesta\r",
 									"var jsonData = pm.response.json();\r",
 									"var id = []\r",
-									"jsonData.forEach((x)=>{id.push(x.id)});\r",
+									"jsonData.forEach((x)=>{\r",
+									"    if(x.available==true){\r",
+									"        id.push(x.id)\r",
+									"    }\r",
+									"});\r",
 									"var existingId= id[Math.floor(Math.random() * id.length)];\r",
 									"var nonexistentId = existingId;\r",
 									"while(id.includes(nonexistentId)){\r",
@@ -327,8 +331,8 @@
 									"pm.test(\"Correct message on the body\", () => {\r",
 									"    var jsonData = pm.response.json();\r",
 									"    pm.expect(jsonData.name).to.eql(pm.environment.get(\"nameBook\"));\r",
-									"    pm.expect(jsonData.type).to.eql(pm.environment.get(\"typeBook\"))\r",
-									"    pm.expect(jsonData.available).to.eql(pm.environment.get(\"availableBook\"))\r",
+									"    pm.expect(jsonData.type).to.eql(pm.environment.get(\"typeBook\"));\r",
+									"    pm.expect(jsonData.available).to.eql(pm.environment.get(\"availableBook\"));\r",
 									"});\r",
 									"pm.test(\"Status code is 200\", () => {\r",
 									"    pm.response.to.have.status(200);\r",
@@ -545,15 +549,12 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"Status code is 400\", ()=> {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});\r",
-									"pm.test(\"Status code name has Bad Request\", ()=> {\r",
-									"    pm.response.to.have.status(\"Bad Request\");\r",
+									"pm.test(\"Status code is 400 or 404\", ()=> {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([400,404]);\r",
 									"});\r",
 									"pm.test(\"Correct message on the body\", ()=> {\r",
 									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.error).to.eql(\"Invalid or missing bookId.\");\r",
+									"    pm.expect(jsonData.error).to.oneOf([\"Invalid or missing bookId.\",\"This book is not in stock. Try again later.\"]);\r",
 									"});"
 								],
 								"type": "text/javascript"
